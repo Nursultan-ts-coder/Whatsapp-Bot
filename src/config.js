@@ -22,6 +22,10 @@ const DEFAULT_DAILY_MESSAGE = [
   'Чоң рахмат !',
 ].join('\n')
 
+// Sent back after a reply is saved. {name} comes from the sheet, {number} is
+// the number written to the sheet.
+const DEFAULT_CONFIRM_MESSAGE = 'Рахмат, {name} байке! Бүгүнкү күнгө {number} бет жазылды.'
+
 export const config = {
   sheetId: required('GOOGLE_SHEET_ID'),
   credentialsFile: process.env.GOOGLE_CREDENTIALS_FILE || './google-credentials.json',
@@ -30,6 +34,7 @@ export const config = {
   phoneColumn: process.env.PHONE_COLUMN || 'phone',
   dailyTime: process.env.DAILY_TIME || '',
   dailyMessage: (process.env.DAILY_MESSAGE || DEFAULT_DAILY_MESSAGE).replace(/\\n/g, '\n'),
+  confirmMessage: process.env.CONFIRM_MESSAGE === 'off' ? '' : (process.env.CONFIRM_MESSAGE || DEFAULT_CONFIRM_MESSAGE).replace(/\\n/g, '\n'),
   authDir: process.env.AUTH_DIR || './auth',
   stateFile: process.env.STATE_FILE || './state.json',
   pairPhone: (process.env.PAIR_PHONE || '').replace(/\D/g, ''),

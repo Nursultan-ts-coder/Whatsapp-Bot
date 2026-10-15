@@ -1,5 +1,7 @@
-import { extractNumber, extractText, formatDay, jidToPhone } from './messages.js'
+import { config } from './config.js'
+import { extractNumber, extractText, fillTemplate, formatDay, jidToPhone } from './messages.js'
 import { dayColumn, findPerson, writeCell } from './sheets.js'
+import { getSocket } from './whatsapp.js'
 
 // Handle one message at a time so two replies can't both add today's column.
 let queue = Promise.resolve()
@@ -32,4 +34,10 @@ async function saveReply(msg, phoneJid) {
   const column = await dayColumn(sentAt)
   await writeCell(person.rowNumber, column, value)
   console.log(`Saved ${value} for ${person.name} on ${formatDay(sentAt)}`)
+
+  // Thank the person and confirm the number that was saved.
+  if (config.confirmMessage) {
+    const text = fillTemplate(config.confirmMessage, { ...person, number: value, date: formatDay(sentAt) })
+    await getSocket().sendMessage(msg.key.remoteJid, { text }, { quoted: msg })
+  }
 }
