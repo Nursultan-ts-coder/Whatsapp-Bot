@@ -103,3 +103,33 @@ export function extractText(message) {
   if (type === 'contactMessage') return `[contact ${inner.displayName ?? ''}]`.trim()
   return `[${type.replace(/Message$/, '')}]`
 }
+
+// "15/10/2026", the date format used for the day columns in Sheet1.
+export function formatDay(date) {
+  const p = (n) => String(n).padStart(2, '0')
+  return `${p(date.getDate())}/${p(date.getMonth() + 1)}/${date.getFullYear()}`
+}
+
+export function sameDay(a, b) {
+  return !!a && !!b && a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate()
+}
+
+export const digitsOf = (value) => String(value ?? '').replace(/\D/g, '')
+
+// True when two phone numbers are the same person. Allows one side to be
+// written without the country code (e.g. 0705608170 vs 996705608170).
+export function phonesMatch(a, b) {
+  const x = digitsOf(a)
+  const y = digitsOf(b)
+  if (x.length < 7 || y.length < 7) return false
+  if (x === y) return true
+  return x.slice(-9) === y.slice(-9)
+}
+
+// Returns the number in a reply like "20", "сделал 25" or "12,5",
+// or null when there is no number or more than one.
+export function extractNumber(text) {
+  const found = String(text ?? '').match(/-?\d+(?:[.,]\d+)?/g)
+  if (!found || found.length !== 1) return null
+  return Number(found[0].replace(',', '.'))
+}

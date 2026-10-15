@@ -13,7 +13,7 @@ The bot reads and writes your sheet as a Google "service account", which is a ro
 5. Create a Google Sheet. Click **Share** and add the service account's email (it looks like `name@project.iam.gserviceaccount.com`) as an **Editor**.
 6. Copy the sheet id from its URL: `docs.google.com/spreadsheets/d/`**`<this part>`**`/edit`.
 
-You don't need to create the tabs. On its first start the bot adds `Schedule` and `Inbox` with the right headers.
+The bot works with the tab named `Sheet1`: a `name` column, a `phone` column (digits with country code), then one column per day. See the README for details.
 
 ## 2. Oracle Cloud Always Free VM
 

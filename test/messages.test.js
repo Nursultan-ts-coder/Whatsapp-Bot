@@ -48,3 +48,31 @@ test('extractText handles text, captions, media and protocol messages', () => {
   assert.equal(extractText({ protocolMessage: {} }), null)
   assert.equal(extractText(undefined), null)
 })
+
+test('Sheet1 helpers: day headers, phone matching and number replies', async () => {
+  const { formatDay, sameDay, phonesMatch, extractNumber, parseSendAt } = await import('../src/messages.js')
+  assert.equal(formatDay(new Date(2026, 9, 5)), '05/10/2026')
+  assert.ok(sameDay(parseSendAt('15/10/2026'), new Date(2026, 9, 15, 18, 30)))
+  assert.ok(!sameDay(parseSendAt('10/09/2026'), new Date(2026, 9, 9)))
+  assert.ok(!sameDay(parseSendAt('phone'), new Date()))
+
+  assert.ok(phonesMatch('996705608170', '+996705608170'))
+  assert.ok(phonesMatch('0705608170', '+996 705 608 170'))
+  assert.ok(!phonesMatch('996705608170', '996705608171'))
+  assert.ok(!phonesMatch('', '+996705608170'))
+
+  assert.equal(extractNumber('20'), 20)
+  assert.equal(extractNumber(' сделал 25 '), 25)
+  assert.equal(extractNumber('12,5'), 12.5)
+  assert.equal(extractNumber('спасибо'), null)
+  assert.equal(extractNumber('20 и 30'), null)
+})
+
+test('isTimeToSend compares against DAILY_TIME', async () => {
+  process.env.GOOGLE_SHEET_ID ||= 'test'
+  const { isTimeToSend } = await import('../src/daily.js')
+  assert.ok(isTimeToSend('09:00', new Date(2026, 9, 15, 9, 0)))
+  assert.ok(isTimeToSend('9:30', new Date(2026, 9, 15, 21, 0)))
+  assert.ok(!isTimeToSend('09:00', new Date(2026, 9, 15, 8, 59)))
+  assert.ok(!isTimeToSend('', new Date()))
+})

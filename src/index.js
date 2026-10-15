@@ -1,7 +1,8 @@
 import { config } from './config.js'
-import { extractText, formatDate, jidToPhone } from './messages.js'
+import { sendDailyMessage } from './daily.js'
+import { handleIncoming } from './responses.js'
 import { startScheduler } from './scheduler.js'
-import { appendInbox, openSheet } from './sheets.js'
+import { openSheet } from './sheets.js'
 import { connect } from './whatsapp.js'
 
 try {
@@ -12,18 +13,7 @@ try {
   process.exit(1)
 }
 
-await connect(async (msg, phoneJid) => {
-  const text = extractText(msg.message)
-  if (text === null) return
-  const received = msg.messageTimestamp ? new Date(Number(msg.messageTimestamp) * 1000) : new Date()
-  await appendInbox({
-    Received: formatDate(received),
-    Phone: jidToPhone(phoneJid),
-    Name: msg.pushName ?? '',
-    Message: text,
-  })
-  console.log(`Logged message from ${jidToPhone(phoneJid)}`)
-})
+await connect(handleIncoming)
 
-startScheduler()
-console.log(`Checking the "${config.scheduleTab}" tab every ${config.checkEverySeconds}s`)
+startScheduler(sendDailyMessage)
+if (config.dailyMessage && config.dailyTime) console.log(`Daily message goes out at ${config.dailyTime}`)

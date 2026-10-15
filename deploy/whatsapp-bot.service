@@ -6,8 +6,8 @@ After=network-online.target
 Wants=network-online.target
 
 [Service]
-User=ubuntu
-WorkingDirectory=/home/ubuntu/Whatsapp-Bot
+User=opc
+WorkingDirectory=/home/opc/Whatsapp-Bot
 ExecStart=/usr/bin/node src/index.js
 Restart=always
 RestartSec=10

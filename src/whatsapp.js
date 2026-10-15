@@ -80,7 +80,7 @@ export async function connect(onMessage) {
     for (const msg of messages) {
       const jid = msg.key.remoteJid
       if (msg.key.fromMe || !jid || jid === 'status@broadcast' || jid.endsWith('@newsletter')) continue
-      if (isJidGroup(jid) && !config.logGroups) continue
+      if (isJidGroup(jid)) continue
       try {
         await onMessage(msg, await senderPhoneJid(msg))
       } catch (err) {

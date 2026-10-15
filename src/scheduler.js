@@ -9,8 +9,11 @@ const randomDelay = () =>
 
 let running = false
 
-export function startScheduler() {
+// Every CHECK_EVERY_SECONDS: run the extra job (the daily message), then send
+// due rows from the optional Schedule tab.
+export function startScheduler(extraJob) {
   const tick = async () => {
+    if (extraJob) await extraJob()
     if (running || !isReady()) return
     running = true
     try {

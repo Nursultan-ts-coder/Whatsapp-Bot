@@ -1,28 +1,30 @@
 # Whatsapp-Bot
 
-A small WhatsApp bot that runs on your own WhatsApp number and uses one Google Sheet:
+A small WhatsApp bot that runs on your own WhatsApp number and works with one Google Sheet:
 
-1. **Scheduled messages.** Add rows to the `Schedule` tab and the bot sends each message when its time comes.
-2. **Incoming messages.** Every message people send you is added to the `Inbox` tab.
+1. **Daily message.** Every day at `DAILY_TIME` it sends a message to everyone listed in `Sheet1`, with their name from the sheet and today's date filled in (`{name}` and `{date}`). The text is in `src/config.js`, or set `DAILY_MESSAGE` in `.env` to change it.
+2. **Replies go into the sheet.** When someone answers with a number, the bot finds their row in `Sheet1` and writes the number under today's date column. It adds the column for today if it's missing.
 
-It's one Node.js program built on [Baileys](https://github.com/WhiskeySockets/Baileys), an unofficial WhatsApp Web client. It's meant to run all the time on a free Oracle Cloud VM. Setup steps are in [docs/SETUP.md](docs/SETUP.md).
+It's one Node.js program built on [Baileys](https://github.com/WhiskeySockets/Baileys), an unofficial WhatsApp Web client. It runs all the time on a free Oracle Cloud VM. Setup steps are in [docs/SETUP.md](docs/SETUP.md).
 
 ## The sheet
 
-**Schedule** tab (you fill this in):
+`Sheet1` has one row per person and one column per day:
 
-| Phone | Name | Message | SendAt | Repeat | Status |
-|---|---|---|---|---|---|
-| +996555123456 | Aibek | Hi {name}, football at 7 tonight? | 2026-10-20 09:00 | | |
-| +996700987654 | Aliya | Good morning {name}! | 2026-10-16 08:00 | daily | |
+| name | phone | 13/10/2026 | 15/10/2026 |
+|---|---|---|---|
+| Анвар | 996709171758 | 40 | 45 |
+| Болот | 996551103469 | | 30 |
 
-- **Phone**: number with country code. Format the column as *Plain text* so Sheets doesn't change it.
-- **Message**: `{name}` (or any other column name in braces) is replaced with that row's value.
-- **SendAt**: when to send, in the time zone set in `.env`. `2026-10-20 09:00` is the safest format; `20.10.2026 9:00` also works.
-- **Repeat**: leave empty for one message, or write `daily`, `weekly` or `monthly`.
-- **Status**: the bot writes `Sent ...`, `Last sent ...` (for repeats) or `Error: ...`. Clear it to send the row again. Write `skip` to pause a row.
+- **phone**: the WhatsApp number with country code, digits only.
+- **Day columns**: headers in `DD/MM/YYYY`. The bot uses the column for the day the reply was sent, and adds it at the end if it doesn't exist yet.
+- **What gets saved**: a reply with exactly one number, like `20`, `сделал 25` or `12,5`. A later reply on the same day replaces the earlier one. Messages without a number (or with several) are skipped, and so are messages from numbers that aren't in the sheet.
 
-**Inbox** tab (the bot fills this in): `Received | Phone | Name | Message`. Photos and voice notes without a caption show as `[image]`, `[audio]` and so on.
+The column names, the tab name and the daily message are set in `.env` (see `.env.example`).
+
+### Optional: one-off messages
+
+If you add a `Schedule` tab with the columns `Phone | Name | Message | SendAt | Repeat | Status`, the bot also sends each row once its `SendAt` time (e.g. `2026-10-20 09:00`) has passed. `Repeat` can be `daily`, `weekly` or `monthly`. The bot writes `Sent ...` or `Error: ...` into Status.
 
 ## Avoiding a ban
 
@@ -31,7 +33,6 @@ WhatsApp doesn't allow unofficial clients and can ban a number that uses one. To
 - Only message people who have your number saved and who talk to you anyway.
 - Keep the list small. Use `{name}` so every message is different.
 - Keep the random wait between messages (`MIN_DELAY_SECONDS` / `MAX_DELAY_SECONDS`) at its default or longer.
-- If you can, use a spare number rather than your main one.
 
 ## Running locally
 

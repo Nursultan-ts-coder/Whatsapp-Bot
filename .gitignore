@@ -1,5 +1,11 @@
 node_modules/
 .env
 auth/
+state.json
 google-credentials.json
 *.log
+
+# SSH keys and other secrets: never commit these, the repo is public
+*.key
+*.key.pub
+*.pem
