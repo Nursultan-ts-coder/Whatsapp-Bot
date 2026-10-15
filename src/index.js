@@ -1,7 +1,5 @@
-import { config } from './config.js'
-import { sendDailyMessage } from './daily.js'
+import { startDaily } from './daily.js'
 import { handleIncoming } from './responses.js'
-import { startScheduler } from './scheduler.js'
 import { openSheet } from './sheets.js'
 import { connect } from './whatsapp.js'
 
@@ -14,6 +12,4 @@ try {
 }
 
 await connect(handleIncoming)
-
-startScheduler(sendDailyMessage)
-if (config.dailyMessage && config.dailyTime) console.log(`Daily message goes out at ${config.dailyTime}`)
+await startDaily()

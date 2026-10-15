@@ -73,9 +73,3 @@ export async function writeCell(rowNumber, columnIndex, value) {
   sheet.getCell(rowIndex, columnIndex).value = value
   await sheet.saveUpdatedCells()
 }
-
-// The optional Schedule tab for one-off messages. Returns [] when it doesn't exist.
-export async function getScheduleRows() {
-  const sheet = doc.sheetsByTitle[config.scheduleTab]
-  return sheet ? sheet.getRows() : []
-}

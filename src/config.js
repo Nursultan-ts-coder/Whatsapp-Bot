@@ -30,13 +30,10 @@ export const config = {
   phoneColumn: process.env.PHONE_COLUMN || 'phone',
   dailyTime: process.env.DAILY_TIME || '',
   dailyMessage: (process.env.DAILY_MESSAGE || DEFAULT_DAILY_MESSAGE).replace(/\\n/g, '\n'),
-  scheduleTab: process.env.SCHEDULE_TAB || 'Schedule',
   authDir: process.env.AUTH_DIR || './auth',
   stateFile: process.env.STATE_FILE || './state.json',
   pairPhone: (process.env.PAIR_PHONE || '').replace(/\D/g, ''),
-  checkEverySeconds: number('CHECK_EVERY_SECONDS', 60),
   minDelaySeconds: number('MIN_DELAY_SECONDS', 20),
   maxDelaySeconds: number('MAX_DELAY_SECONDS', 60),
-  dateOrder: (process.env.DATE_ORDER || 'DMY').toUpperCase(),
   logLevel: process.env.LOG_LEVEL || 'warn',
 }

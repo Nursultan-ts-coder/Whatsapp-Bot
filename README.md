@@ -2,7 +2,7 @@
 
 A small WhatsApp bot that runs on your own WhatsApp number and works with one Google Sheet:
 
-1. **Daily message.** Every day at `DAILY_TIME` it sends a message to everyone listed in `Sheet1`, with their name from the sheet and today's date filled in (`{name}` and `{date}`). The text is in `src/config.js`, or set `DAILY_MESSAGE` in `.env` to change it.
+1. **Daily message.** Once a day at `DAILY_TIME` it sends a message to everyone listed in `Sheet1`, with their name from the sheet and today's date filled in (`{name}` and `{date}`). The text is in `src/config.js`, or set `DAILY_MESSAGE` in `.env` to change it.
 2. **Replies go into the sheet.** When someone answers with a number, the bot finds their row in `Sheet1` and writes the number under today's date column. It adds the column for today if it's missing.
 
 It's one Node.js program built on [Baileys](https://github.com/WhiskeySockets/Baileys), an unofficial WhatsApp Web client. It runs all the time on a free Oracle Cloud VM. Setup steps are in [docs/SETUP.md](docs/SETUP.md).
@@ -21,10 +21,6 @@ It's one Node.js program built on [Baileys](https://github.com/WhiskeySockets/Ba
 - **What gets saved**: a reply with exactly one number, like `20`, `сделал 25` or `12,5`. A later reply on the same day replaces the earlier one. Messages without a number (or with several) are skipped, and so are messages from numbers that aren't in the sheet.
 
 The column names, the tab name and the daily message are set in `.env` (see `.env.example`).
-
-### Optional: one-off messages
-
-If you add a `Schedule` tab with the columns `Phone | Name | Message | SendAt | Repeat | Status`, the bot also sends each row once its `SendAt` time (e.g. `2026-10-20 09:00`) has passed. `Repeat` can be `daily`, `weekly` or `monthly`. The bot writes `Sent ...` or `Error: ...` into Status.
 
 ## Avoiding a ban
 

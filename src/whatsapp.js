@@ -65,6 +65,12 @@ export async function connect(onMessage) {
     if (connection === 'close') {
       ready = false
       const code = lastDisconnect?.error?.output?.statusCode
+      if (code === DisconnectReason.connectionReplaced) {
+        // Another copy of the bot logged in with the same session. Reconnecting
+        // would just kick that copy off and start a fight, so stop here.
+        console.error('Another copy of this bot is running with the same WhatsApp login. Stop the other copy, then restart this one.')
+        process.exit(1)
+      }
       if (code === DisconnectReason.loggedOut) {
         console.error('WhatsApp logged this device out. Clearing the saved login so a new QR code is shown.')
         await rm(config.authDir, { recursive: true, force: true })

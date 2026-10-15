@@ -68,11 +68,13 @@ test('Sheet1 helpers: day headers, phone matching and number replies', async () 
   assert.equal(extractNumber('20 и 30'), null)
 })
 
-test('isTimeToSend compares against DAILY_TIME', async () => {
+test('nextSendTime finds the next DAILY_TIME', async () => {
   process.env.GOOGLE_SHEET_ID ||= 'test'
-  const { isTimeToSend } = await import('../src/daily.js')
-  assert.ok(isTimeToSend('09:00', new Date(2026, 9, 15, 9, 0)))
-  assert.ok(isTimeToSend('9:30', new Date(2026, 9, 15, 21, 0)))
-  assert.ok(!isTimeToSend('09:00', new Date(2026, 9, 15, 8, 59)))
-  assert.ok(!isTimeToSend('', new Date()))
+  const { nextSendTime } = await import('../src/daily.js')
+  const { formatDate } = await import('../src/messages.js')
+  assert.equal(formatDate(nextSendTime('22:00', new Date(2026, 9, 15, 13, 0))), '2026-10-15 22:00')
+  assert.equal(formatDate(nextSendTime('22:00', new Date(2026, 9, 15, 22, 0))), '2026-10-16 22:00')
+  assert.equal(formatDate(nextSendTime('9:30', new Date(2026, 9, 31, 23, 0))), '2026-11-01 09:30')
+  assert.equal(nextSendTime('', new Date()), null)
+  assert.equal(nextSendTime('soon', new Date()), null)
 })
