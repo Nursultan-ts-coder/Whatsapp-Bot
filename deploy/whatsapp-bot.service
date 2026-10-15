@@ -1,0 +1,16 @@
+# Runs the bot in the background and restarts it if it stops.
+# Install: see docs/SETUP.md, step 4.
+[Unit]
+Description=WhatsApp bot
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=ubuntu
+WorkingDirectory=/home/ubuntu/Whatsapp-Bot
+ExecStart=/usr/bin/node src/index.js
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
