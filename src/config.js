@@ -1,4 +1,8 @@
-import 'dotenv/config'
+import dotenv from 'dotenv'
+
+// Values in .env win over ones already set in the terminal, so editing .env
+// and restarting is always enough.
+dotenv.config({ override: true })
 
 function required(name) {
   const value = process.env[name]
