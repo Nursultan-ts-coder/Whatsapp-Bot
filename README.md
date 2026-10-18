@@ -18,7 +18,6 @@ It's one Node.js program built on [Baileys](https://github.com/WhiskeySockets/Ba
 
 - **phone**: the WhatsApp number with country code, digits only.
 - **Day columns**: headers in `DD/MM/YYYY`. The bot uses the column for the day the reply was sent, and adds it at the end if it doesn't exist yet.
-- **Confirmation**: after saving, the bot replies to the person, e.g. `Рахмат, Нурсултан байке! Бүгүнкү күнгө 120 бет жазылды.` Change or turn it off with `CONFIRM_MESSAGE` in `.env`.
 - **What gets saved**: a reply with exactly one number, like `20`, `сделал 25` or `12,5`. A later reply on the same day replaces the earlier one. Messages without a number (or with several) are skipped, and so are messages from numbers that aren't in the sheet.
 
 The column names, the tab name and the daily message are set in `.env` (see `.env.example`).
