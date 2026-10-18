@@ -45,4 +45,7 @@ export const config = {
   minDelaySeconds: number('MIN_DELAY_SECONDS', 20),
   maxDelaySeconds: number('MAX_DELAY_SECONDS', 60),
   logLevel: process.env.LOG_LEVEL || 'warn',
+  notifyUrl: process.env.NOTIFY_URL || '',
+  alertPhone: (process.env.ALERT_PHONE || '').replace(/\D/g, ''),
+  alertApiKey: process.env.ALERT_APIKEY || '',
 }

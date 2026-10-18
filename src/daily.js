@@ -3,6 +3,7 @@ import { config } from './config.js'
 import { fillTemplate, formatDay, phoneToJid } from './messages.js'
 import { dayColumn, getPeople } from './sheets.js'
 import { getSocket, isReady } from './whatsapp.js'
+import { notify } from './notify.js'
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
 const randomDelay = () =>
@@ -33,6 +34,13 @@ export function nextSendTime(dailyTime, now = new Date()) {
 // Sets one timer for the next DAILY_TIME. If today's time already passed and
 // today's message wasn't sent yet (the bot was off), it sends it now.
 export async function startDaily() {
+  // Manual send: `sudo systemctl kill -s USR2 whatsapp-bot` sends today's
+  // message right away to everyone who hasn't got it yet today.
+  process.on('SIGUSR2', () => {
+    console.log('Manual send requested')
+    runDaily()
+  })
+
   const next = nextSendTime(config.dailyTime)
   if (!next) {
     console.log('DAILY_TIME is not set, so no daily message will be sent')
@@ -82,7 +90,7 @@ async function runDaily(day = formatDay(new Date())) {
   const state = await loadState()
   if (state.day === day && state.done) return
   if (formatDay(new Date()) !== day) {
-    console.error(`Daily message for ${day} was not finished before midnight`)
+    notify(`The daily message for ${day} did not reach everyone. Check the log.`)
     return
   }
   console.log(`Daily message not finished, trying again in ${RETRY_MINUTES} minutes`)
@@ -102,7 +110,10 @@ async function sendDailyMessage() {
     if (state.day !== today || state.time !== config.dailyTime) {
       Object.assign(state, { day: today, time: config.dailyTime, sent: [], done: false })
     }
-    if (state.done) return
+    if (state.done) {
+      console.log(`Daily message for ${today} was already sent to everyone`)
+      return
+    }
 
     await dayColumn(new Date())
     const people = await getPeople()
