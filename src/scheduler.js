@@ -40,12 +40,10 @@ export function isDue(row, now = new Date()) {
 async function sendDueMessages() {
   const rows = await getScheduleRows()
   const due = rows.filter((row) => isDue(row))
-  let first = true
 
   for (const row of due) {
+    await sleep(randomDelay())
     if (!isReady()) return
-    if (!first) await sleep(randomDelay())
-    first = false
 
     const now = new Date()
     const jid = phoneToJid(row.get('Phone'))

@@ -120,6 +120,7 @@ async function sendDailyMessage() {
     let failed = 0
     for (const person of people) {
       if (state.sent.includes(person.phone)) continue
+      await sleep(randomDelay())
       while (!isReady()) await sleep(30000)
       const jid = phoneToJid(person.phone)
       if (!jid) {
@@ -146,7 +147,6 @@ async function sendDailyMessage() {
         console.error(`Daily message to ${person.name} failed:`, err.message)
       }
       await saveState(state)
-      await sleep(randomDelay())
     }
     if (failed) {
       console.error(`Daily message for ${today}: ${failed} send(s) failed`)
