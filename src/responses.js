@@ -11,7 +11,8 @@ export function handleIncoming(msg, phoneJid) {
 
 // Writes a person's reply into their row in Sheet1, under the column for
 // the day the message was sent. Only replies with a single number are saved.
-// If that day already has a reply, it goes to the next day without one.
+// If that day already has a reply, it goes to the next day; if that one is
+// taken too, the reply is skipped.
 async function saveReply(msg, phoneJid) {
   const text = extractText(msg.message)
   if (text === null) return
@@ -30,10 +31,15 @@ async function saveReply(msg, phoneJid) {
   }
 
   const day = msg.messageTimestamp ? new Date(Number(msg.messageTimestamp) * 1000) : new Date()
+  const filled = async (column) => String((await readCell(person.rowNumber, column)) ?? '').trim() !== ''
   let column = await dayColumn(day)
-  while (String((await readCell(person.rowNumber, column)) ?? '').trim()) {
+  if (await filled(column)) {
     day.setDate(day.getDate() + 1)
     column = await dayColumn(day)
+    if (await filled(column)) {
+      console.log(`Skipped ${value} from ${person.name}: replies for today and tomorrow are already saved`)
+      return
+    }
   }
   await writeCell(person.rowNumber, column, value)
   console.log(`Saved ${value} for ${person.name} on ${formatDay(day)}`)
