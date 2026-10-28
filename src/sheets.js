@@ -66,10 +66,19 @@ export async function dayColumn(date) {
   return index
 }
 
-export async function writeCell(rowNumber, columnIndex, value) {
+async function loadCell(rowNumber, columnIndex) {
   const sheet = peopleSheet()
   const rowIndex = rowNumber - 1
   await sheet.loadCells({ startRowIndex: rowIndex, endRowIndex: rowIndex + 1, startColumnIndex: columnIndex, endColumnIndex: columnIndex + 1 })
-  sheet.getCell(rowIndex, columnIndex).value = value
-  await sheet.saveUpdatedCells()
+  return sheet.getCell(rowIndex, columnIndex)
+}
+
+export async function readCell(rowNumber, columnIndex) {
+  return (await loadCell(rowNumber, columnIndex)).value
+}
+
+export async function writeCell(rowNumber, columnIndex, value) {
+  const cell = await loadCell(rowNumber, columnIndex)
+  cell.value = value
+  await peopleSheet().saveUpdatedCells()
 }
